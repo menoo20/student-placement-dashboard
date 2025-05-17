@@ -337,11 +337,16 @@
                     }
                 ],
                 drawCallback: function() {
-                    // Rebind edit button click handlers after table redraws
-                    $('.edit-student').off('click').on('click', function() {
+                    $('.edit-student').off('click').on('click', function(e) {
+                        e.preventDefault();
+                        // Only prompt if not already authenticated in this session
+                        if (!window.isAdmin) {
+                            if (!checkAdmin(() => { window.isAdmin = true; })) {
+                                return false;
+                            }
+                        }
                         const studentId = $(this).data('id');
-                        
-                        // Fetch student data
+                        // Fetch student data and show modal only if admin
                         $.ajax({
                             url: `/get_student/${studentId}`,
                             method: 'GET',
@@ -353,7 +358,7 @@
                                 $('#edit_company').val(data.company);
                                 $('#edit_speaking_points').val(data.speaking_points);
                                 $('#edit_total_points').val(data.total_points);
-                                
+
                                 updateProficiencyPreview(data.total_points, '#editProficiencyPreview');
                                 $('#editStudentModal').modal('show');
                             },
@@ -451,7 +456,14 @@
                 $('#deleteSelectedBtn').prop('disabled', $('.student-checkbox:checked').length === 0);
             });
             // Single delete
-            $(document).on('click', '.btn-delete-student', function() {
+            $(document).off('click.adminDelete').on('click.adminDelete', '.btn-delete-student', function(e) {
+                e.preventDefault();
+                if (!window.isAdmin) {
+                    if (!checkAdmin(() => { window.isAdmin = true; })) {
+                        return false;
+                    }
+                }
+                // Only if admin, proceed with delete
                 const studentId = $(this).data('id');
                 if (confirm('Are you sure you want to delete this student?')) {
                     $.post(`/delete_student/${studentId}`, function() {
@@ -460,7 +472,14 @@
                 }
             });
             // Bulk delete
-            $('#deleteSelectedBtn').on('click', function() {
+            $('#deleteSelectedBtn').off('click.adminBulkDelete').on('click.adminBulkDelete', function(e) {
+                e.preventDefault();
+                if (!window.isAdmin) {
+                    if (!checkAdmin(() => { window.isAdmin = true; })) {
+                        return false;
+                    }
+                }
+                // Only if admin, proceed with bulk delete
                 const ids = $('.student-checkbox:checked').map(function() {
                     return $(this).data('id');
                 }).get();
@@ -569,6 +588,19 @@
                     }
                 }
             });
+        }
+
+        const ADMIN_PASSWORD = "menoo20"; // Change this to your desired password
+
+        function checkAdmin(actionCallback) {
+            const input = prompt("Admin only! Please enter the admin password:");
+            if (input === ADMIN_PASSWORD) {
+                actionCallback();
+                return true;
+            } else if (input !== null) {
+                alert("Incorrect password. Action cancelled.");
+            }
+            return false;
         }
     </script>
 </body>
