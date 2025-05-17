@@ -61,6 +61,7 @@ function refreshTable() {
                     : `<span class="badge bg-info">${student.proficiency_level}</span>`;
                 
                 table.row.add([
+                    `<input type="checkbox" class="student-checkbox" data-id="${student.id}">`,
                     student.name,
                     student.email,
                     student.national_id,
@@ -68,7 +69,8 @@ function refreshTable() {
                     student.speaking_points,
                     student.total_points,
                     proficiencyBadge,
-                    student.instructor
+                    student.instructor,
+                    `<button class="btn btn-danger btn-sm btn-delete-student" data-id="${student.id}">Delete</button>`
                 ]);
             });
             
@@ -170,6 +172,39 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial data load
     refreshAllData();
+
+    // Handle select all checkboxes
+    $(document).on('change', '#selectAllStudents', function() {
+        $('.student-checkbox').prop('checked', this.checked).trigger('change');
+    });
+
+    // Enable/disable delete selected button
+    $(document).on('change', '.student-checkbox', function() {
+        $('#deleteSelectedBtn').prop('disabled', $('.student-checkbox:checked').length === 0);
+    });
+
+    // Single delete
+    $(document).on('click', '.btn-delete-student', function() {
+        const studentId = $(this).data('id');
+        if (confirm('Are you sure you want to delete this student?')) {
+            fetch(`/delete_student/${studentId}`, {method: 'POST'})
+                .then(() => window.location.reload());
+        }
+    });
+
+    // Bulk delete
+    $(document).on('click', '#deleteSelectedBtn', function() {
+        const ids = $('.student-checkbox:checked').map(function() {
+            return $(this).data('id');
+        }).get();
+        if (ids.length && confirm('Delete selected students?')) {
+            fetch('/delete_students', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ids})
+            }).then(() => window.location.reload());
+        }
+    });
 });
 
 // Handle form submission via AJAX

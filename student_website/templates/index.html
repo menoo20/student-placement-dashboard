@@ -28,11 +28,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                            <i class="bi bi-plus-circle"></i> Add New Student
-                        </button>
-                    </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-12 text-center">
@@ -91,14 +86,23 @@
             <!-- Student Table -->
             <div class="col-md-12 mb-4">
                 <div class="card">
-                    <div class="card-header bg-light">
-                        <h3 class="card-title">Student List</h3>
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">Student List</h3>
+                        <div>
+                            <button id="deleteSelectedBtn" class="btn btn-danger btn-sm me-2" disabled>
+                                <i class="bi bi-trash"></i> Delete Selected
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                <i class="bi bi-plus-circle"></i> Add New Student
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="studentTable" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
+                                        <th><input type="checkbox" id="selectAllStudents"></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>National ID</th>
@@ -112,7 +116,8 @@
                                 </thead>
                                 <tbody>
                                     {% for student in students %}
-                                    <tr>
+                                    <tr data-id="{{ student.id }}">
+                                        <td><input type="checkbox" class="student-checkbox" data-id="{{ student.id }}"></td>
                                         <td>{{ student.name }}</td>
                                         <td>{{ student.email }}</td>
                                         <td>{{ student.national_id }}</td>
@@ -145,7 +150,6 @@
             <div class="col-md-12">
                 <h3 class="mb-3">Analytics</h3>
                 <div class="row analytics-section">
-                    <!-- Proficiency Level Distribution -->
                     <div class="col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-header bg-light">
@@ -156,8 +160,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Instructor Distribution -->
                     <div class="col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-header bg-light">
@@ -168,14 +170,16 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Score Distribution -->
+                </div>
+                <!-- Score Distribution standalone row -->
+                <div class="row">
                     <div class="col-md-12 mb-4">
-                        <div class="card">
+                        <div class="card h-100">
                             <div class="card-header bg-light">
                                 <h4 class="card-title">Score Distribution</h4>
                             </div>
                             <div class="card-body">
+                                <div id="scoreDistributionMessage" class="text-center text-muted mb-2" style="display:none;"></div>
                                 <canvas id="scoreDistributionChart"></canvas>
                             </div>
                         </div>
@@ -437,77 +441,116 @@
                     $('.alert').alert('close');
                 }, 5000);
             }
+
+            // Handle select all
+            $('#selectAllStudents').on('change', function() {
+                $('.student-checkbox').prop('checked', this.checked).trigger('change');
+            });
+            // Enable/disable delete selected button
+            $(document).on('change', '.student-checkbox', function() {
+                $('#deleteSelectedBtn').prop('disabled', $('.student-checkbox:checked').length === 0);
+            });
+            // Single delete
+            $(document).on('click', '.btn-delete-student', function() {
+                const studentId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this student?')) {
+                    $.post(`/delete_student/${studentId}`, function() {
+                        window.location.reload();
+                    });
+                }
+            });
+            // Bulk delete
+            $('#deleteSelectedBtn').on('click', function() {
+                const ids = $('.student-checkbox:checked').map(function() {
+                    return $(this).data('id');
+                }).get();
+                if (ids.length && confirm('Delete selected students?')) {
+                    $.ajax({
+                        url: '/delete_students',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ids}),
+                        success: function() { window.location.reload(); }
+                    });
+                }
+            });
+
+            // Fetch analytics data and render charts
+            $.getJSON('/api/analytics', function(data) {
+                renderAnalyticsCharts(data);
+                if (data && data.score) {
+                    renderScoreDistributionChart(data.score);
+                } else {
+                    document.getElementById('scoreDistributionMessage').textContent = "No score data available.";
+                    document.getElementById('scoreDistributionMessage').style.display = "block";
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                document.getElementById('scoreDistributionMessage').textContent = "Failed to load score data.";
+                document.getElementById('scoreDistributionMessage').style.display = "block";
+                console.error("Error fetching /api/analytics:", textStatus, errorThrown);
+            });
         });
         
         // Charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Proficiency Level Chart
-            const proficiencyCtx = document.getElementById('proficiencyChart').getContext('2d');
-            const proficiencyChart = new Chart(proficiencyCtx, {
+        function renderAnalyticsCharts(data) {
+            // Proficiency Chart
+            new Chart(document.getElementById('proficiencyChart').getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Beginner', 'Intermediate'],
+                    labels: data.proficiency.labels,
                     datasets: [{
-                        data: [
-                            {{ stats.proficiency_counts.get('Beginner', 0) }},
-                            {{ stats.proficiency_counts.get('Intermediate', 0) }}
-                        ],
+                        data: data.proficiency.counts,
                         backgroundColor: ['#198754', '#0dcaf0'],
                         borderWidth: 1
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
-            
+
             // Instructor Chart
-            const instructorCtx = document.getElementById('instructorChart').getContext('2d');
-            const instructorChart = new Chart(instructorCtx, {
+            new Chart(document.getElementById('instructorChart').getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Mr. Tawfeek', 'Mr. Mohammed Ameen'],
+                    labels: data.instructor.labels,
                     datasets: [{
-                        data: [
-                            {{ stats.instructor_counts.get('Mr. Tawfeek', 0) }},
-                            {{ stats.instructor_counts.get('Mr. Mohammed Ameen', 0) }}
-                        ],
+                        data: data.instructor.counts,
                         backgroundColor: ['#fd7e14', '#6f42c1'],
                         borderWidth: 1
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
-            
-            // Score Distribution Chart
-            const scoreCtx = document.getElementById('scoreDistributionChart').getContext('2d');
-            const scoreChart = new Chart(scoreCtx, {
+        }
+
+        // Only for Score Distribution
+        function renderScoreDistributionChart(data) {
+            console.log("Score Distribution Data:", data); // Debug: log data to console
+
+            const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
+            const msgDiv = document.getElementById('scoreDistributionMessage');
+            // Remove any previous chart instance
+            if (window.scoreChartInstance) {
+                window.scoreChartInstance.destroy();
+            }
+
+            // Check if data is present and not all zeros
+            const hasData = data && Array.isArray(data.counts) && data.counts.some(v => v > 0);
+
+            if (!hasData) {
+                msgDiv.textContent = "No score data available.";
+                msgDiv.style.display = "block";
+                return;
+            } else {
+                msgDiv.style.display = "none";
+            }
+
+            window.scoreChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+'],
+                    labels: data.labels,
                     datasets: [{
                         label: 'Number of Students',
-                        data: [
-                            {{ stats.score_ranges['0-9'] }},
-                            {{ stats.score_ranges['10-19'] }},
-                            {{ stats.score_ranges['20-29'] }},
-                            {{ stats.score_ranges['30-39'] }},
-                            {{ stats.score_ranges['40-49'] }},
-                            {{ stats.score_ranges['50-59'] }},
-                            {{ stats.score_ranges['60+'] }}
-                        ],
+                        data: data.counts,
                         backgroundColor: 'rgba(54, 162, 235, 0.5)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
@@ -518,21 +561,15 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Students'
-                            }
+                            title: { display: true, text: 'Number of Students' }
                         },
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Score Range'
-                            }
+                            title: { display: true, text: 'Score Range' }
                         }
                     }
                 }
             });
-        });
+        }
     </script>
 </body>
 </html>

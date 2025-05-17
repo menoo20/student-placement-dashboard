@@ -386,8 +386,21 @@ def delete_student(id):
     conn.execute('DELETE FROM students WHERE id = ?', (id,))
     conn.commit()
     conn.close()
-    
+    # Support AJAX: return JSON if requested, else redirect
+    if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'success': True})
     return redirect(url_for('index'))
+
+@app.route('/delete_students', methods=['POST'])
+def delete_students():
+    ids = request.json.get('ids', [])
+    if not ids:
+        return jsonify({'error': 'No IDs provided'}), 400
+    conn = get_db_connection()
+    conn.executemany('DELETE FROM students WHERE id = ?', [(i,) for i in ids])
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
 
 @app.route('/reset_database', methods=['GET'])
 def reset_database():
@@ -399,6 +412,61 @@ def reset_database():
     init_db()
     
     return redirect(url_for('index'))
+
+@app.route('/api/analytics')
+def api_analytics():
+    conn = get_db_connection()
+    students = conn.execute('SELECT * FROM students').fetchall()
+    conn.close()
+
+    # Proficiency counts
+    proficiency_labels = ['Beginner', 'Intermediate']
+    proficiency_counts = [
+        sum(1 for s in students if s['proficiency_level'] == 'Beginner'),
+        sum(1 for s in students if s['proficiency_level'] == 'Intermediate')
+    ]
+
+    # Instructor counts
+    instructor_labels = ['Mr. Tawfeek', 'Mr. Mohammed Ameen']
+    instructor_counts = [
+        sum(1 for s in students if s['instructor'] == 'Mr. Tawfeek'),
+        sum(1 for s in students if s['instructor'] == 'Mr. Mohammed Ameen')
+    ]
+
+    # Score ranges
+    score_labels = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+']
+    score_counts = [0] * 7
+    for s in students:
+        score = s['total_points']
+        if score < 10:
+            score_counts[0] += 1
+        elif score < 20:
+            score_counts[1] += 1
+        elif score < 30:
+            score_counts[2] += 1
+        elif score < 40:
+            score_counts[3] += 1
+        elif score < 50:
+            score_counts[4] += 1
+        elif score < 60:
+            score_counts[5] += 1
+        else:
+            score_counts[6] += 1
+
+    return jsonify({
+        "proficiency": {
+            "labels": proficiency_labels,
+            "counts": proficiency_counts
+        },
+        "instructor": {
+            "labels": instructor_labels,
+            "counts": instructor_counts
+        },
+        "score": {
+            "labels": score_labels,
+            "counts": score_counts
+        }
+    })
 
 if __name__ == '__main__':
     # Initialize the database
