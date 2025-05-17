@@ -1,0 +1,31 @@
+app = "student-placement-dashboard"
+
+[build]
+  # If your app is in a subdirectory, set context = "./student_website"
+  # context = "."
+
+[env]
+  # Set environment variables here if needed
+  FLASK_ENV = "production"
+  # ADMIN_PASSWORD = "your_admin_password"
+
+[experimental]
+  auto_rollback = true
+
+[[services]]
+  internal_port = 5001
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    interval = 10000
+    timeout = 2000
+    grace_period = "10s"
+    restart_limit = 0
