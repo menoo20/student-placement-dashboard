@@ -1,0 +1,6 @@
+Total Records: 58
+Average Total Points: 31.32758620689655
+Median Total Points: 30.0
+Min Points: 10
+Max Points: 57
+Standard Deviation: 11.74493236151867

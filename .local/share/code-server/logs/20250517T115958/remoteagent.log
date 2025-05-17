@@ -1,0 +1,31 @@
+2025-05-17 11:59:58.979 [info] 
+
+
+
+
+2025-05-17 11:59:58.996 [info] Extension host agent started.
+2025-05-17 11:59:59.057 [info] Started initializing default profile extensions in extensions installation folder. file:///home/ubuntu/.local/share/code-server/extensions
+2025-05-17 11:59:59.063 [info] ComputeTargetPlatform: linux-x64
+2025-05-17 11:59:59.070 [info] Completed initializing default profile extensions in extensions installation folder. file:///home/ubuntu/.local/share/code-server/extensions
+2025-05-17 12:00:02.987 [info] [10.164.155.1][4bc9e9fd][ManagementConnection] New connection established.
+2025-05-17 12:00:06.316 [info] [10.164.155.1][c8b483e3][ExtensionHostConnection] New connection established.
+2025-05-17 12:00:06.327 [info] [10.164.155.1][c8b483e3][ExtensionHostConnection] <16206> Launched Extension Host Process.
+2025-05-17 12:03:55.759 [info] ComputeTargetPlatform: linux-x64
+2025-05-17 12:17:45.045 [info] [10.230.33.1][e84087f2][ManagementConnection] New connection established.
+2025-05-17 12:17:47.187 [info] [10.230.33.1][7af52317][ExtensionHostConnection] New connection established.
+2025-05-17 12:17:47.194 [info] [10.230.33.1][7af52317][ExtensionHostConnection] <22753> Launched Extension Host Process.
+2025-05-17 12:36:55.448 [info] [10.14.26.1][07c8fa34][ManagementConnection] New connection established.
+2025-05-17 12:36:58.328 [info] [10.14.26.1][529c0634][ExtensionHostConnection] New connection established.
+2025-05-17 12:36:58.335 [info] [10.14.26.1][529c0634][ExtensionHostConnection] <30589> Launched Extension Host Process.
+2025-05-17 12:37:27.007 [error] Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20)
+2025-05-17 12:37:27.011 [info] [10.164.155.1][4bc9e9fd][ManagementConnection] The client has disconnected, will wait for reconnection 3h before disposing...
+2025-05-17 12:52:47.549 [info] [10.164.155.1][4bc9e9fd][ManagementConnection] Another client has connected, will shorten the wait for reconnection 5m before disposing...
+2025-05-17 12:52:47.549 [info] [10.192.56.1][9e35682d][ManagementConnection] New connection established.
+2025-05-17 12:52:49.494 [info] [10.192.56.1][6f4d61f0][ExtensionHostConnection] New connection established.
+2025-05-17 12:52:49.503 [info] [10.192.56.1][6f4d61f0][ExtensionHostConnection] <36920> Launched Extension Host Process.
+2025-05-17 12:53:20.322 [error] Error: read ETIMEDOUT
+    at TCP.onStreamRead (node:internal/stream_base_commons:218:20)
+2025-05-17 12:53:20.335 [info] [10.230.33.1][e84087f2][ManagementConnection] The client has disconnected, will wait for reconnection 3h before disposing...
+2025-05-17 12:57:47.621 [info] [10.164.155.1][4bc9e9fd][ManagementConnection] The reconnection short grace time of 5m has expired, so the connection will be disposed.
+2025-05-17 12:57:47.920 [info] [10.164.155.1][c8b483e3][ExtensionHostConnection] <16206> Extension Host Process exited with code: 0, signal: null.

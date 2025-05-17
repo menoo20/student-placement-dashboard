@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Gold Institute - Student Placement</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Hero Section with Jumbotron and Video Background -->
+    <div class="jumbotron-section">
+        <video autoplay muted loop id="bg-video">
+            <source src="{{ url_for('static', filename='videos/bg.mp4') }}" type="video/mp4">
+        </video>
+        <div class="video-overlay">
+            <div class="container py-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ url_for('static', filename='images/black-gold-sold-1.png') }}" alt="Black Gold Institute Logo" class="header-logo me-3">
+                            <div>
+                                <h1 class="display-5 text-white">Black Gold Institute</h1>
+                                <p class="lead text-white mb-0">Student Placement Dashboard</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                            <i class="bi bi-plus-circle"></i> Add New Student
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <h1 class="display-3 arabic-text gold-text">معهد الذهب الأسود العالي</h1>
+                        <p class="lead arabic-text text-white">هو معهد يقدم دورات متخصصة و متطورة في مجالات مختلفة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Main Content -->
+        <div class="row mb-4">
+            <!-- Statistics Cards -->
+            <div class="col-md-12 mb-4">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Students</h5>
+                                <h2 class="display-4" id="totalStudents">{{ stats.total_students }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Beginner Level</h5>
+                                <h2 class="display-4" id="beginnerCount">{{ stats.proficiency_counts.get('Beginner', 0) }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Intermediate Level</h5>
+                                <h2 class="display-4" id="intermediateCount">{{ stats.proficiency_counts.get('Intermediate', 0) }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-warning text-dark h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Average Score</h5>
+                                <h2 class="display-4" id="avgScore">{{ "%.1f"|format(stats.avg_score) }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Container for messages -->
+            <div class="col-md-12 mb-4" id="alertContainer"></div>
+
+            <!-- Student Table -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h3 class="card-title">Student List</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="studentTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>National ID</th>
+                                        <th>Company</th>
+                                        <th>Speaking Points</th>
+                                        <th>Total Points</th>
+                                        <th>Proficiency Level</th>
+                                        <th>Instructor</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>{{ student.name }}</td>
+                                        <td>{{ student.email }}</td>
+                                        <td>{{ student.national_id }}</td>
+                                        <td>{{ student.company }}</td>
+                                        <td>{{ student.speaking_points }}</td>
+                                        <td>{{ student.total_points }}</td>
+                                        <td>
+                                            {% if student.proficiency_level == 'Beginner' %}
+                                            <span class="badge bg-success">{{ student.proficiency_level }}</span>
+                                            {% else %}
+                                            <span class="badge bg-info">{{ student.proficiency_level }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ student.instructor }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-icon edit-student" data-id="{{ student.id }}">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="col-md-12">
+                <h3 class="mb-3">Analytics</h3>
+                <div class="row analytics-section">
+                    <!-- Proficiency Level Distribution -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h4 class="card-title">Proficiency Level Distribution</h4>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="proficiencyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Instructor Distribution -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h4 class="card-title">Instructor Assignment</h4>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="instructorChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Score Distribution -->
+                    <div class="col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4 class="card-title">Score Distribution</h4>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="scoreDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-white p-3 mt-4">
+            <div class="row">
+                <div class="col">
+                    <p class="mb-0">&copy; 2025 Black Gold Institute - Student Placement System</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addStudentModalLabel">Add New Student</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/add_student" method="POST" id="addStudentForm">
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="national_id" class="form-label">National ID</label>
+                                <input type="text" class="form-control" id="national_id" name="national_id" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="company" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="company" name="company">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="speaking_points" class="form-label">Speaking Points</label>
+                                <input type="number" class="form-control" id="speaking_points" name="speaking_points" min="0" max="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="total_points" class="form-label">Total Points</label>
+                                <input type="number" class="form-control" id="total_points" name="total_points" min="0" max="60" required>
+                                <div class="form-text">
+                                    <span id="proficiencyPreview" class="badge bg-secondary">Proficiency level will be calculated automatically</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editStudentModalLabel">Edit Student Information</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editStudentForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_student_id" name="student_id">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="edit_name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_national_id" class="form-label">National ID</label>
+                                <input type="text" class="form-control" id="edit_national_id" name="national_id" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_company" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="edit_company" name="company">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_speaking_points" class="form-label">Speaking Points</label>
+                                <input type="number" class="form-control" id="edit_speaking_points" name="speaking_points" min="0" max="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_total_points" class="form-label">Total Points</label>
+                                <input type="number" class="form-control" id="edit_total_points" name="total_points" min="0" max="60" required>
+                                <div class="form-text">
+                                    <span id="editProficiencyPreview" class="badge bg-secondary">Proficiency level will be calculated automatically</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            const table = $('#studentTable').DataTable({
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                order: [[5, 'desc']], // Sort by total points by default
+                columnDefs: [
+                    { 
+                        targets: -1, // Last column (Edit button)
+                        orderable: false,
+                        searchable: false,
+                        width: "40px"
+                    }
+                ],
+                drawCallback: function() {
+                    // Rebind edit button click handlers after table redraws
+                    $('.edit-student').off('click').on('click', function() {
+                        const studentId = $(this).data('id');
+                        
+                        // Fetch student data
+                        $.ajax({
+                            url: `/get_student/${studentId}`,
+                            method: 'GET',
+                            success: function(data) {
+                                $('#edit_student_id').val(data.id);
+                                $('#edit_name').val(data.name);
+                                $('#edit_email').val(data.email);
+                                $('#edit_national_id').val(data.national_id);
+                                $('#edit_company').val(data.company);
+                                $('#edit_speaking_points').val(data.speaking_points);
+                                $('#edit_total_points').val(data.total_points);
+                                
+                                updateProficiencyPreview(data.total_points, '#editProficiencyPreview');
+                                $('#editStudentModal').modal('show');
+                            },
+                            error: function() {
+                                showAlert('Error fetching student data. Please try again.', 'danger');
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Preview proficiency level and instructor for Add Student
+            $('#total_points').on('input', function() {
+                updateProficiencyPreview($(this).val(), '#proficiencyPreview');
+            });
+            
+            // Preview proficiency level and instructor for Edit Student
+            $('#edit_total_points').on('input', function() {
+                updateProficiencyPreview($(this).val(), '#editProficiencyPreview');
+            });
+            
+            // Function to update proficiency preview
+            function updateProficiencyPreview(points, targetElement) {
+                points = parseInt(points);
+                let proficiency, instructor, badgeClass;
+                
+                if (points < 30) {
+                    proficiency = 'Beginner';
+                    instructor = 'Mr. Tawfeek';
+                    badgeClass = 'bg-success';
+                } else {
+                    proficiency = 'Intermediate';
+                    instructor = 'Mr. Mohammed Ameen';
+                    badgeClass = 'bg-info';
+                }
+                
+                $(targetElement)
+                    .text(`${proficiency} level - ${instructor}`)
+                    .removeClass('bg-secondary bg-success bg-info')
+                    .addClass(badgeClass);
+            }
+            
+            // Edit Student Form Submit
+            $('#editStudentForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const studentId = $('#edit_student_id').val();
+                const formData = $(this).serialize();
+                
+                $.ajax({
+                    url: `/update_student/${studentId}`,
+                    method: 'POST',
+                    data: formData,
+                    success: function() {
+                        // Close the modal
+                        $('#editStudentModal').modal('hide');
+                        
+                        // Show success message
+                        showAlert('Student information updated successfully!', 'success');
+                        
+                        // Reload the page to refresh the data
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1500);
+                    },
+                    error: function() {
+                        showAlert('Error updating student information. Please try again.', 'danger');
+                    }
+                });
+            });
+            
+            // Function to show alerts
+            function showAlert(message, type) {
+                const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $('#alertContainer').html(alertHtml);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
+                    $('.alert').alert('close');
+                }, 5000);
+            }
+        });
+        
+        // Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Proficiency Level Chart
+            const proficiencyCtx = document.getElementById('proficiencyChart').getContext('2d');
+            const proficiencyChart = new Chart(proficiencyCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Beginner', 'Intermediate'],
+                    datasets: [{
+                        data: [
+                            {{ stats.proficiency_counts.get('Beginner', 0) }},
+                            {{ stats.proficiency_counts.get('Intermediate', 0) }}
+                        ],
+                        backgroundColor: ['#198754', '#0dcaf0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Instructor Chart
+            const instructorCtx = document.getElementById('instructorChart').getContext('2d');
+            const instructorChart = new Chart(instructorCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Mr. Tawfeek', 'Mr. Mohammed Ameen'],
+                    datasets: [{
+                        data: [
+                            {{ stats.instructor_counts.get('Mr. Tawfeek', 0) }},
+                            {{ stats.instructor_counts.get('Mr. Mohammed Ameen', 0) }}
+                        ],
+                        backgroundColor: ['#fd7e14', '#6f42c1'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Score Distribution Chart
+            const scoreCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+            const scoreChart = new Chart(scoreCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [
+                            {{ stats.score_ranges['0-9'] }},
+                            {{ stats.score_ranges['10-19'] }},
+                            {{ stats.score_ranges['20-29'] }},
+                            {{ stats.score_ranges['30-39'] }},
+                            {{ stats.score_ranges['40-49'] }},
+                            {{ stats.score_ranges['50-59'] }},
+                            {{ stats.score_ranges['60+'] }}
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Students'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Score Range'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

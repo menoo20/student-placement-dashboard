@@ -1,0 +1,6 @@
+2025/05/16-20:26:53.125 276 Creating DB /home/ubuntu/.browser_data_dir/Default/IndexedDB/https_usc-excel.officeapps.live.com_0.indexeddb.leveldb since it was missing.
+2025/05/16-20:26:53.126 276 Reusing MANIFEST /home/ubuntu/.browser_data_dir/Default/IndexedDB/https_usc-excel.officeapps.live.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/05/16-21:36:47.135 1c50 Level-0 table #5: started
+2025/05/16-21:36:47.137 1c50 Level-0 table #5: 163713 bytes OK
+2025/05/16-21:36:47.137 1c50 Delete type=0 #3
+2025/05/16-21:36:47.137 1c50 Manual compaction at level-0 from (begin) .. (end); will stop at (end)

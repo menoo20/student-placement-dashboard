@@ -1,0 +1,35 @@
+[2025-05-16T20:26:51.090Z] info  code-server 4.100.2 9dd999ba78032163d606fadd531de5e1fcae5443
+[2025-05-16T20:26:51.104Z] info  Using user-data-dir /home/ubuntu/.local/share/code-server
+[2025-05-16T20:26:51.126Z] info  Using config file /home/ubuntu/.config/code-server/config.yaml
+[2025-05-16T20:26:51.127Z] info  HTTP server listening on http://0.0.0.0:8329/
+[2025-05-16T20:26:51.127Z] info    - Authentication is enabled
+[2025-05-16T20:26:51.127Z] info      - Using password from /home/ubuntu/.config/code-server/config.yaml
+[2025-05-16T20:26:51.127Z] info    - Not serving HTTPS
+[2025-05-16T20:26:51.127Z] info  Session server listening on /home/ubuntu/.local/share/code-server/code-server-ipc.sock
+[11:59:58] 
+
+
+
+
+[11:59:58] Extension host agent started.
+[11:59:59] Started initializing default profile extensions in extensions installation folder. file:///home/ubuntu/.local/share/code-server/extensions
+[11:59:59] ComputeTargetPlatform: linux-x64
+[11:59:59] Completed initializing default profile extensions in extensions installation folder. file:///home/ubuntu/.local/share/code-server/extensions
+[12:00:02] [10.164.155.1][4bc9e9fd][ManagementConnection] New connection established.
+[12:00:06] [10.164.155.1][c8b483e3][ExtensionHostConnection] New connection established.
+[12:00:06] [10.164.155.1][c8b483e3][ExtensionHostConnection] <16206> Launched Extension Host Process.
+[12:03:55] ComputeTargetPlatform: linux-x64
+[12:17:45] [10.230.33.1][e84087f2][ManagementConnection] New connection established.
+[12:17:47] [10.230.33.1][7af52317][ExtensionHostConnection] New connection established.
+[12:17:47] [10.230.33.1][7af52317][ExtensionHostConnection] <22753> Launched Extension Host Process.
+[12:36:55] [10.14.26.1][07c8fa34][ManagementConnection] New connection established.
+[12:36:58] [10.14.26.1][529c0634][ExtensionHostConnection] New connection established.
+[12:36:58] [10.14.26.1][529c0634][ExtensionHostConnection] <30589> Launched Extension Host Process.
+[12:37:27] [10.164.155.1][4bc9e9fd][ManagementConnection] The client has disconnected, will wait for reconnection 3h before disposing...
+[12:52:47] [10.164.155.1][4bc9e9fd][ManagementConnection] Another client has connected, will shorten the wait for reconnection 5m before disposing...
+[12:52:47] [10.192.56.1][9e35682d][ManagementConnection] New connection established.
+[12:52:49] [10.192.56.1][6f4d61f0][ExtensionHostConnection] New connection established.
+[12:52:49] [10.192.56.1][6f4d61f0][ExtensionHostConnection] <36920> Launched Extension Host Process.
+[12:53:20] [10.230.33.1][e84087f2][ManagementConnection] The client has disconnected, will wait for reconnection 3h before disposing...
+[12:57:47] [10.164.155.1][4bc9e9fd][ManagementConnection] The reconnection short grace time of 5m has expired, so the connection will be disposed.
+[12:57:47] [10.164.155.1][c8b483e3][ExtensionHostConnection] <16206> Extension Host Process exited with code: 0, signal: null.

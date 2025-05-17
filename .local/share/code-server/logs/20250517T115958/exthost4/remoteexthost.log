@@ -1,0 +1,23 @@
+2025-05-17 08:52:50.544 [info] Extension host with pid 36920 started
+2025-05-17 08:52:50.544 [error] Error: EEXIST: file already exists, open '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5/vscode.lock'
+2025-05-17 08:52:50.544 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5/vscode.lock': Could not acquire lock, checking if the file is stale.
+2025-05-17 08:52:50.550 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5/vscode.lock': The lock does not look stale, elapsed: 601 ms, giving up.
+2025-05-17 08:52:50.551 [error] Error: EEXIST: file already exists, open '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-1/vscode.lock'
+2025-05-17 08:52:50.552 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-1/vscode.lock': Could not acquire lock, checking if the file is stale.
+2025-05-17 08:52:50.552 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-1/vscode.lock': The lock does not look stale, elapsed: 605 ms, giving up.
+2025-05-17 08:52:50.553 [error] Error: EEXIST: file already exists, open '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-2/vscode.lock'
+2025-05-17 08:52:50.553 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-2/vscode.lock': Could not acquire lock, checking if the file is stale.
+2025-05-17 08:52:50.554 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-2/vscode.lock': The lock does not look stale, elapsed: 857 ms, giving up.
+2025-05-17 08:52:50.557 [info] Lock '/home/ubuntu/.local/share/code-server/User/workspaceStorage/5b09c4a5-3/vscode.lock': Lock acquired.
+2025-05-17 08:52:50.756 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2025-05-17 08:52:50.757 [info] ExtensionService#_doActivateExtension vscode.configuration-editing, startup: false, activationEvent: 'onLanguage:jsonc'
+2025-05-17 08:52:50.758 [info] ExtensionService#_doActivateExtension vscode.json-language-features, startup: false, activationEvent: 'onLanguage:jsonc'
+2025-05-17 08:52:50.758 [info] ExtensionService#_doActivateExtension vscode.typescript-language-features, startup: false, activationEvent: 'onLanguage:jsonc'
+2025-05-17 08:52:51.480 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2025-05-17 08:52:51.647 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2025-05-17 08:52:51.647 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2025-05-17 08:52:51.959 [info] Eager extensions activated
+2025-05-17 08:52:51.959 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2025-05-17 08:52:51.960 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2025-05-17 08:52:52.179 [info] ExtensionService#_doActivateExtension vscode.tunnel-forwarding, startup: false, activationEvent: 'onTunnel'
+2025-05-17 08:52:52.280 [info] ExtensionService#_doActivateExtension vscode.github-authentication, startup: false, activationEvent: 'onAuthenticationRequest:github'

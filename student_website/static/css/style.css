@@ -1,0 +1,200 @@
+/* Custom styles for the student dashboard */
+
+/* Arabic text support */
+@font-face {
+    font-family: 'Noto Sans Arabic';
+    src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Support for Arabic text */
+[lang="ar"], 
+.arabic-text {
+    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+}
+
+/* Gold text color */
+.gold-text {
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Jumbotron Section with Video Background */
+.jumbotron-section {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+#bg-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 0;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    padding: 3rem 0;
+}
+
+.jumbotron-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.jumbotron-section p {
+    font-size: 1.5rem;
+}
+
+/* Header styling */
+.header-logo {
+    height: 70px;
+    width: auto;
+}
+
+/* Card styling */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Table styling */
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#studentTable thead {
+    background-color: #f8f9fa;
+}
+
+#studentTable_wrapper .dataTables_filter input {
+    border-radius: 20px;
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+}
+
+/* Edit button styling */
+.btn-icon {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: 0.25rem;
+    color: #0d6efd;
+    background-color: transparent;
+    border: none;
+}
+
+.btn-icon:hover {
+    color: #0a58ca;
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Analytics section with background */
+.analytics-section {
+    background-image: url('../images/contact-form.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.analytics-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    z-index: 0;
+}
+
+.analytics-section .card {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Footer styling */
+footer {
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart containers */
+canvas {
+    max-height: 300px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .jumbotron-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .jumbotron-section p {
+        font-size: 1.2rem;
+    }
+    
+    .header-logo {
+        height: 50px;
+    }
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.modal-header {
+    border-radius: 15px 15px 0 0;
+}
+
+/* Form styling */
+.form-control {
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+}
