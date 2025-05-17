@@ -300,9 +300,25 @@ def update_student(id):
     email = request.form['email']
     national_id = request.form['national_id']
     company = request.form['company']
-    speaking_points = int(request.form['speaking_points'])
-    total_points = int(request.form['total_points'])
-    
+    new_speaking_points = int(request.form['speaking_points'])
+    new_total_points = int(request.form['total_points'])
+
+    conn = get_db_connection()
+    student = conn.execute('SELECT speaking_points, total_points FROM students WHERE id = ?', (id,)).fetchone()
+    if student:
+        old_speaking_points = student['speaking_points'] or 0
+        old_total_points = student['total_points'] or 0
+        # Calculate the difference in speaking points
+        diff = new_speaking_points - old_speaking_points
+        # Adjust total_points by the difference
+        adjusted_total_points = old_total_points + diff
+        # If the user also changed total_points field directly, use the higher value
+        # (or you can choose to always use the adjusted value)
+        total_points = adjusted_total_points
+    else:
+        # Fallback: use the submitted value
+        total_points = new_total_points
+
     # Determine proficiency level and instructor
     if total_points < 30:
         proficiency_level = 'Beginner'
@@ -310,18 +326,17 @@ def update_student(id):
     else:
         proficiency_level = 'Intermediate'
         instructor = 'Mr. Mohammed Ameen'
-    
-    conn = get_db_connection()
+
     conn.execute('''
     UPDATE students
     SET name = ?, email = ?, national_id = ?, company = ?, speaking_points = ?, 
         total_points = ?, proficiency_level = ?, instructor = ?
     WHERE id = ?
-    ''', (name, email, national_id, company, speaking_points, total_points, 
+    ''', (name, email, national_id, company, new_speaking_points, total_points,
           proficiency_level, instructor, id))
     conn.commit()
     conn.close()
-    
+
     return redirect(url_for('index'))
 
 @app.route('/delete_student/<int:id>', methods=['POST'])
