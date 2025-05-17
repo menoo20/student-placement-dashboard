@@ -468,8 +468,12 @@ def api_analytics():
         }
     })
 
+@app.before_first_request
+def initialize_database():
+    init_db()
+
 if __name__ == '__main__':
-    # Initialize the database
+    # Initialize the database (optional, for local dev)
     init_db()
     
     # Run the app
