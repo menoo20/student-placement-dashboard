@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Hero Section with Jumbotron and Video Background -->
@@ -42,44 +41,6 @@
     <div class="container-fluid">
         <!-- Main Content -->
         <div class="row mb-4">
-            <!-- Statistics Cards -->
-            <div class="col-md-12 mb-4">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-primary text-white h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Students</h5>
-                                <h2 class="display-4" id="totalStudents">{{ stats.total_students }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-success text-white h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Beginner Level</h5>
-                                <h2 class="display-4" id="beginnerCount">{{ stats.proficiency_counts.get('Beginner', 0) }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-info text-white h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Intermediate Level</h5>
-                                <h2 class="display-4" id="intermediateCount">{{ stats.proficiency_counts.get('Intermediate', 0) }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-warning text-dark h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Average Score</h5>
-                                <h2 class="display-4" id="avgScore">{{ "%.1f"|format(stats.avg_score) }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Alert Container for messages -->
             <div class="col-md-12 mb-4" id="alertContainer"></div>
 
@@ -145,44 +106,27 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Analytics Section -->
-            <div class="col-md-12">
-                <h3 class="mb-3">Analytics</h3>
-                <div class="row analytics-section">
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header bg-light">
-                                <h4 class="card-title">Proficiency Level Distribution</h4>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="proficiencyChart"></canvas>
-                            </div>
-                        </div>
+        <!-- Student Statistics Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <h4 class="card-title mb-0">Proficiency Level Distribution</h4>
                     </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header bg-light">
-                                <h4 class="card-title">Instructor Assignment</h4>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="instructorChart"></canvas>
-                            </div>
-                        </div>
+                    <div class="card-body">
+                        <canvas id="proficiencyPieChart"></canvas>
                     </div>
                 </div>
-                <!-- Score Distribution standalone row -->
-                <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header bg-light">
-                                <h4 class="card-title">Score Distribution</h4>
-                            </div>
-                            <div class="card-body">
-                                <div id="scoreDistributionMessage" class="text-center text-muted mb-2" style="display:none;"></div>
-                                <canvas id="scoreDistributionChart"></canvas>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <h4 class="card-title mb-0">Instructor Assignment</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="instructorPieChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -311,6 +255,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     <script>
@@ -495,21 +440,6 @@
                 }
             });
 
-            // Fetch analytics data and render charts
-            $.getJSON('/api/analytics', function(data) {
-                renderAnalyticsCharts(data);
-                if (data && data.score) {
-                    renderScoreDistributionChart(data.score);
-                } else {
-                    document.getElementById('scoreDistributionMessage').textContent = "No score data available.";
-                    document.getElementById('scoreDistributionMessage').style.display = "block";
-                }
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                document.getElementById('scoreDistributionMessage').textContent = "Failed to load score data.";
-                document.getElementById('scoreDistributionMessage').style.display = "block";
-                console.error("Error fetching /api/analytics:", textStatus, errorThrown);
-            });
-
             // Add Student Form Submit (protect with password prompt)
             $('#addStudentForm').off('submit.addAdmin').on('submit.addAdmin', function(e) {
                 if (!window.isAdminAdd) {
@@ -555,86 +485,6 @@
             });
         });
         
-        // Charts
-        function renderAnalyticsCharts(data) {
-            // Proficiency Chart
-            new Chart(document.getElementById('proficiencyChart').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: data.proficiency.labels,
-                    datasets: [{
-                        data: data.proficiency.counts,
-                        backgroundColor: ['#198754', '#0dcaf0'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-            });
-
-            // Instructor Chart
-            new Chart(document.getElementById('instructorChart').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: data.instructor.labels,
-                    datasets: [{
-                        data: data.instructor.counts,
-                        backgroundColor: ['#fd7e14', '#6f42c1'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-            });
-        }
-
-        // Only for Score Distribution
-        function renderScoreDistributionChart(data) {
-            console.log("Score Distribution Data:", data); // Debug: log data to console
-
-            const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
-            const msgDiv = document.getElementById('scoreDistributionMessage');
-            // Remove any previous chart instance
-            if (window.scoreChartInstance) {
-                window.scoreChartInstance.destroy();
-            }
-
-            // Check if data is present and not all zeros
-            const hasData = data && Array.isArray(data.counts) && data.counts.some(v => v > 0);
-
-            if (!hasData) {
-                msgDiv.textContent = "No score data available.";
-                msgDiv.style.display = "block";
-                return;
-            } else {
-                msgDiv.style.display = "none";
-            }
-
-            window.scoreChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Number of Students',
-                        data: data.counts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Number of Students' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Score Range' }
-                        }
-                    }
-                }
-            });
-        }
-
         const ADMIN_PASSWORD = "menoo20"; // Change this to your desired password
 
         function checkAdmin(actionCallback) {
@@ -647,7 +497,49 @@
             }
             return false;
         }
+
+        // Student statistics pie charts
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/student_stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Proficiency Pie Chart
+                    const profCtx = document.getElementById('proficiencyPieChart').getContext('2d');
+                    new Chart(profCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.proficiency.labels,
+                            datasets: [{
+                                data: data.proficiency.counts,
+                                backgroundColor: ['#198754', '#0dcaf0'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+
+                    // Instructor Pie Chart
+                    const instrCtx = document.getElementById('instructorPieChart').getContext('2d');
+                    new Chart(instrCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.instructor.labels,
+                            datasets: [{
+                                data: data.instructor.counts,
+                                backgroundColor: ['#fd7e14', '#6f42c1'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                });
+        });
     </script>
 </body>
 </html>
-``` 

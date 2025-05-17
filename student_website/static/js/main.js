@@ -1,49 +1,5 @@
 // Main JavaScript for the student dashboard
 
-// Function to refresh charts with new data
-function refreshCharts(data) {
-    // Update proficiency chart
-    if (window.proficiencyChart) {
-        window.proficiencyChart.data.datasets[0].data = [
-            data.proficiency_counts.Beginner || 0,
-            data.proficiency_counts.Intermediate || 0
-        ];
-        window.proficiencyChart.update();
-    }
-    
-    // Update instructor chart
-    if (window.instructorChart) {
-        window.instructorChart.data.datasets[0].data = [
-            data.instructor_counts['Mr. Tawfeek'] || 0,
-            data.instructor_counts['Mr. Mohammed Ameen'] || 0
-        ];
-        window.instructorChart.update();
-    }
-    
-    // Update score distribution chart
-    if (window.scoreChart) {
-        // Count scores in each range
-        const scoreRanges = [
-            data.scores.filter(score => score <= 9).length,
-            data.scores.filter(score => score >= 10 && score <= 19).length,
-            data.scores.filter(score => score >= 20 && score <= 29).length,
-            data.scores.filter(score => score >= 30 && score <= 39).length,
-            data.scores.filter(score => score >= 40 && score <= 49).length,
-            data.scores.filter(score => score >= 50 && score <= 59).length,
-            data.scores.filter(score => score >= 60).length
-        ];
-        
-        window.scoreChart.data.datasets[0].data = scoreRanges;
-        window.scoreChart.update();
-    }
-    
-    // Update statistics cards
-    document.getElementById('totalStudents').textContent = data.total_students;
-    document.getElementById('beginnerCount').textContent = data.proficiency_counts.Beginner || 0;
-    document.getElementById('intermediateCount').textContent = data.proficiency_counts.Intermediate || 0;
-    document.getElementById('avgScore').textContent = data.avg_score.toFixed(1);
-}
-
 // Function to refresh the student table
 function refreshTable() {
     fetch('/api/students')
@@ -80,98 +36,71 @@ function refreshTable() {
         .catch(error => console.error('Error refreshing table:', error));
 }
 
-// Function to refresh all data
-function refreshAllData() {
-    // Refresh statistics and charts
-    fetch('/api/statistics')
+// Function to refresh the statistics pie charts
+function refreshStudentStatsCharts() {
+    fetch('/api/student_stats')
         .then(response => response.json())
-        .then(data => refreshCharts(data))
-        .catch(error => console.error('Error refreshing statistics:', error));
-    
-    // Refresh table
-    refreshTable();
+        .then(data => {
+            // Proficiency Pie Chart
+            if (window.proficiencyPieChartInstance) {
+                window.proficiencyPieChartInstance.data.labels = data.proficiency.labels;
+                window.proficiencyPieChartInstance.data.datasets[0].data = data.proficiency.counts;
+                window.proficiencyPieChartInstance.update();
+            } else {
+                const profCtx = document.getElementById('proficiencyPieChart').getContext('2d');
+                window.proficiencyPieChartInstance = new Chart(profCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.proficiency.labels,
+                        datasets: [{
+                            data: data.proficiency.counts,
+                            backgroundColor: ['#198754', '#0dcaf0'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            // Instructor Pie Chart
+            if (window.instructorPieChartInstance) {
+                window.instructorPieChartInstance.data.labels = data.instructor.labels;
+                window.instructorPieChartInstance.data.datasets[0].data = data.instructor.counts;
+                window.instructorPieChartInstance.update();
+            } else {
+                const instrCtx = document.getElementById('instructorPieChart').getContext('2d');
+                window.instructorPieChartInstance = new Chart(instrCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.instructor.labels,
+                        datasets: [{
+                            data: data.instructor.counts,
+                            backgroundColor: ['#fd7e14', '#6f42c1'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+        });
 }
 
-// Initialize charts when DOM is loaded
+// Function to refresh the student table and update stats charts
+function refreshTableAndStats() {
+    refreshTable();
+    refreshStudentStatsCharts();
+}
+
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Store chart references globally for later updates
-    const proficiencyCtx = document.getElementById('proficiencyChart').getContext('2d');
-    window.proficiencyChart = new Chart(proficiencyCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Beginner', 'Intermediate'],
-            datasets: [{
-                data: [0, 0], // Will be updated with actual data
-                backgroundColor: ['#198754', '#0dcaf0'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-    
-    const instructorCtx = document.getElementById('instructorChart').getContext('2d');
-    window.instructorChart = new Chart(instructorCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Mr. Tawfeek', 'Mr. Mohammed Ameen'],
-            datasets: [{
-                data: [0, 0], // Will be updated with actual data
-                backgroundColor: ['#fd7e14', '#6f42c1'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-    
-    const scoreCtx = document.getElementById('scoreDistributionChart').getContext('2d');
-    window.scoreChart = new Chart(scoreCtx, {
-        type: 'bar',
-        data: {
-            labels: ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+'],
-            datasets: [{
-                label: 'Number of Students',
-                data: [0, 0, 0, 0, 0, 0, 0], // Will be updated with actual data
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Students'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Score Range'
-                    }
-                }
-            }
-        }
-    });
-    
     // Initial data load
-    refreshAllData();
+    refreshTableAndStats();
 
     // Handle select all checkboxes
     $(document).on('change', '#selectAllStudents', function() {
@@ -188,7 +117,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const studentId = $(this).data('id');
         if (confirm('Are you sure you want to delete this student?')) {
             fetch(`/delete_student/${studentId}`, {method: 'POST'})
-                .then(() => window.location.reload());
+                .then(() => {
+                    refreshTableAndStats();
+                    window.location.reload();
+                });
         }
     });
 
@@ -202,7 +134,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ids})
-            }).then(() => window.location.reload());
+            }).then(() => {
+                refreshTableAndStats();
+                window.location.reload();
+            });
         }
     });
 });
@@ -238,8 +173,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    // Refresh data
-                    refreshAllData();
+                    // Refresh data and charts
+                    refreshTableAndStats();
                 } else {
                     throw new Error('Failed to add student');
                 }

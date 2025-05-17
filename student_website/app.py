@@ -232,77 +232,12 @@ def init_db():
     conn.commit()
     conn.close()
 
-def get_stats():
-    conn = get_db_connection()
-    
-    # Get total students
-    cursor = conn.execute('SELECT COUNT(*) FROM students')
-    total_students = cursor.fetchone()[0]
-    
-    # Get proficiency level counts
-    cursor = conn.execute('SELECT proficiency_level, COUNT(*) FROM students GROUP BY proficiency_level')
-    proficiency_counts = {}
-    for row in cursor.fetchall():
-        proficiency_counts[row[0]] = row[1]
-    
-    # Get instructor counts
-    cursor = conn.execute('SELECT instructor, COUNT(*) FROM students GROUP BY instructor')
-    instructor_counts = {}
-    for row in cursor.fetchall():
-        instructor_counts[row[0]] = row[1]
-    
-    # Get average score
-    cursor = conn.execute('SELECT AVG(total_points) FROM students')
-    avg_score = cursor.fetchone()[0] or 0
-    
-    # Get score distribution
-    score_ranges = {
-        '0-9': 0,
-        '10-19': 0,
-        '20-29': 0,
-        '30-39': 0,
-        '40-49': 0,
-        '50-59': 0,
-        '60+': 0
-    }
-    
-    cursor = conn.execute('SELECT total_points FROM students')
-    for row in cursor.fetchall():
-        score = row[0]
-        if score < 10:
-            score_ranges['0-9'] += 1
-        elif score < 20:
-            score_ranges['10-19'] += 1
-        elif score < 30:
-            score_ranges['20-29'] += 1
-        elif score < 40:
-            score_ranges['30-39'] += 1
-        elif score < 50:
-            score_ranges['40-49'] += 1
-        elif score < 60:
-            score_ranges['50-59'] += 1
-        else:
-            score_ranges['60+'] += 1
-    
-    conn.close()
-    
-    return {
-        'total_students': total_students,
-        'proficiency_counts': proficiency_counts,
-        'instructor_counts': instructor_counts,
-        'avg_score': avg_score,
-        'score_ranges': score_ranges
-    }
-
 @app.route('/')
 def index():
     conn = get_db_connection()
     students = conn.execute('SELECT * FROM students').fetchall()
     conn.close()
-    
-    stats = get_stats()
-    
-    return render_template('index.html', students=students, stats=stats)
+    return render_template('index.html', students=students)
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
@@ -422,58 +357,28 @@ def reset_database():
     
     return redirect(url_for('index'))
 
-@app.route('/api/analytics')
-def api_analytics():
+@app.route('/api/student_stats')
+def api_student_stats():
     conn = get_db_connection()
-    students = conn.execute('SELECT * FROM students').fetchall()
+    students = conn.execute('SELECT proficiency_level, instructor FROM students').fetchall()
     conn.close()
 
-    # Proficiency counts
-    proficiency_labels = ['Beginner', 'Intermediate']
-    proficiency_counts = [
-        sum(1 for s in students if s['proficiency_level'] == 'Beginner'),
-        sum(1 for s in students if s['proficiency_level'] == 'Intermediate')
-    ]
+    # Count proficiency levels
+    beginner = sum(1 for s in students if s['proficiency_level'] == 'Beginner')
+    intermediate = sum(1 for s in students if s['proficiency_level'] == 'Intermediate')
 
-    # Instructor counts
-    instructor_labels = ['Mr. Tawfeek', 'Mr. Mohammed Ameen']
-    instructor_counts = [
-        sum(1 for s in students if s['instructor'] == 'Mr. Tawfeek'),
-        sum(1 for s in students if s['instructor'] == 'Mr. Mohammed Ameen')
-    ]
-
-    # Score ranges
-    score_labels = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60+']
-    score_counts = [0] * 7
-    for s in students:
-        score = s['total_points']
-        if score < 10:
-            score_counts[0] += 1
-        elif score < 20:
-            score_counts[1] += 1
-        elif score < 30:
-            score_counts[2] += 1
-        elif score < 40:
-            score_counts[3] += 1
-        elif score < 50:
-            score_counts[4] += 1
-        elif score < 60:
-            score_counts[5] += 1
-        else:
-            score_counts[6] += 1
+    # Count instructors
+    tawfeek = sum(1 for s in students if s['instructor'] == 'Mr. Tawfeek')
+    mohammed = sum(1 for s in students if s['instructor'] == 'Mr. Mohammed Ameen')
 
     return jsonify({
         "proficiency": {
-            "labels": proficiency_labels,
-            "counts": proficiency_counts
+            "labels": ["Beginner", "Intermediate"],
+            "counts": [beginner, intermediate]
         },
         "instructor": {
-            "labels": instructor_labels,
-            "counts": instructor_counts
-        },
-        "score": {
-            "labels": score_labels,
-            "counts": score_counts
+            "labels": ["Mr. Tawfeek", "Mr. Mohammed Ameen"],
+            "counts": [tawfeek, mohammed]
         }
     })
 
