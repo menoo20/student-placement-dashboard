@@ -468,13 +468,12 @@ def api_analytics():
         }
     })
 
-@app.before_first_request
-def initialize_database():
-    init_db()
-
 if __name__ == '__main__':
     # Initialize the database (optional, for local dev)
     init_db()
     
     # Run the app
     app.run(host='0.0.0.0', port=5001, debug=True)
+
+# For production (e.g., Render), always initialize DB at import time:
+init_db()
