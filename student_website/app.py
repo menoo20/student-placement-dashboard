@@ -288,18 +288,12 @@ def update_student(id):
     if student:
         old_speaking_points = student['speaking_points'] or 0
         old_total_points = student['total_points'] or 0
-        # Calculate the difference in speaking points
         diff = new_speaking_points - old_speaking_points
-        # Adjust total_points by the difference
         adjusted_total_points = old_total_points + diff
-        # If the user also changed total_points field directly, use the higher value
-        # (or you can choose to always use the adjusted value)
         total_points = adjusted_total_points
     else:
-        # Fallback: use the submitted value
         total_points = new_total_points
 
-    # Determine proficiency level and instructor
     if total_points < 30:
         proficiency_level = 'Beginner'
         instructor = 'Mr. Tawfeek'
@@ -317,6 +311,9 @@ def update_student(id):
     conn.commit()
     conn.close()
 
+    # --- Fix: Return JSON for AJAX, redirect for normal POST ---
+    if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify(success=True)
     return redirect(url_for('index'))
 
 @app.route('/delete_student/<int:id>', methods=['POST'])

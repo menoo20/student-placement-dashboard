@@ -326,30 +326,35 @@
             }
             
             // Edit Student Form Submit
-            $('#editStudentForm').on('submit', function(e) {
+            $('#editStudentForm').off('submit').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 const studentId = $('#edit_student_id').val();
+                // Use FormData to ensure all fields are sent
                 const formData = $(this).serialize();
-                
+
                 $.ajax({
                     url: `/update_student/${studentId}`,
                     method: 'POST',
                     data: formData,
-                    success: function() {
-                        // Close the modal
-                        $('#editStudentModal').modal('hide');
-                        
-                        // Show success message
-                        showAlert('Student information updated successfully!', 'success');
-                        
-                        // Reload the page to refresh the data
-                        setTimeout(function() {
-                            window.location.reload();
-                        }, 1500);
+                    success: function(response) {
+                        // Optionally check for errors in response
+                        if (response && response.error) {
+                            showAlert('Error updating student: ' + response.error, 'danger');
+                        } else {
+                            $('#editStudentModal').modal('hide');
+                            showAlert('Student information updated successfully!', 'success');
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1500);
+                        }
                     },
-                    error: function() {
-                        showAlert('Error updating student information. Please try again.', 'danger');
+                    error: function(xhr) {
+                        let msg = 'Error updating student information. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            msg = xhr.responseJSON.error;
+                        }
+                        showAlert(msg, 'danger');
                     }
                 });
             });
