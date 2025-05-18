@@ -41,7 +41,7 @@ def init_db():
     if count == 0:
         # Import data from CSV using standard Python libraries
         try:
-            with open('data/Placement_Test_BG1_Organized.csv', 'r', encoding='utf-8-sig') as file:
+            with open('data/Placement_Test_BG1_Filterable.csv', 'r', encoding='utf-8-sig') as file:
                 # Read the first line to get headers
                 header_line = file.readline().strip()
                 headers = [normalize_header(h) for h in header_line.split(',')]
@@ -129,7 +129,7 @@ def init_db():
             
             # Fallback to try with different encoding if utf-8 fails
             try:
-                with open('data/Placement_Test_BG1_Organized.csv', 'r', encoding='latin1') as file:
+                with open('data/Placement_Test_BG1_Filterable.csv', 'r', encoding='latin1') as file:
                     # Read the first line to get headers
                     header_line = file.readline().strip()
                     headers = [normalize_header(h) for h in header_line.split(',')]
