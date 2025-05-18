@@ -130,35 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#deleteSelectedBtn').prop('disabled', $('.student-checkbox:checked').length === 0);
     });
 
-    // Single delete
-    $(document).on('click', '.btn-delete-student', function() {
-        const studentId = $(this).data('id');
-        if (confirm('Are you sure you want to delete this student?')) {
-            fetch(`/delete_student/${studentId}`, {method: 'POST'})
-                .then(() => {
-                    refreshTableAndStats();
-                    window.location.reload();
-                });
-        }
-    });
-
-    // Bulk delete
-    $(document).on('click', '#deleteSelectedBtn', function() {
-        const ids = $('.student-checkbox:checked').map(function() {
-            return $(this).data('id');
-        }).get();
-        if (ids.length && confirm('Delete selected students?')) {
-            fetch('/delete_students', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ids})
-            }).then(() => {
-                refreshTableAndStats();
-                window.location.reload();
-            });
-        }
-    });
-
     // Intercept the "Add New Student" button to prompt for password before showing modal
     const addBtn = document.querySelector('[data-bs-target="#addStudentModal"]');
     if (addBtn) {
