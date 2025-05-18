@@ -26,8 +26,6 @@ def init_db():
     CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        national_id TEXT NOT NULL,
         company TEXT,
         speaking_points INTEGER,
         total_points INTEGER NOT NULL,
@@ -53,10 +51,6 @@ def init_db():
                 for h in headers:
                     if 'name' in h:
                         header_mapping[h] = 'name'
-                    elif 'email' in h or 'address' in h:
-                        header_mapping[h] = 'email'
-                    elif 'national' in h or 'id' in h:
-                        header_mapping[h] = 'national_id'
                     elif 'company' in h:
                         header_mapping[h] = 'company'
                     elif 'speaking' in h:
@@ -104,8 +98,6 @@ def init_db():
                     
                     # Extract data with fallbacks
                     name = row_data.get('name', '')
-                    email = row_data.get('email', '')
-                    national_id = row_data.get('national_id', '')
                     company = row_data.get('company', '')
                     
                     # Handle potential missing or non-numeric values
@@ -129,9 +121,9 @@ def init_db():
                     
                     # Insert data into the database
                     conn.execute('''
-                    INSERT INTO students (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor))
+                    INSERT INTO students (name, company, speaking_points, total_points, proficiency_level, instructor)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ''', (name, company, speaking_points, total_points, proficiency_level, instructor))
         except Exception as e:
             print(f"Error importing CSV with UTF-8: {e}")
             
@@ -147,10 +139,6 @@ def init_db():
                     for h in headers:
                         if 'name' in h:
                             header_mapping[h] = 'name'
-                        elif 'email' in h or 'address' in h:
-                            header_mapping[h] = 'email'
-                        elif 'national' in h or 'id' in h:
-                            header_mapping[h] = 'national_id'
                         elif 'company' in h:
                             header_mapping[h] = 'company'
                         elif 'speaking' in h:
@@ -198,8 +186,6 @@ def init_db():
                         
                         # Extract data with fallbacks
                         name = row_data.get('name', '')
-                        email = row_data.get('email', '')
-                        national_id = row_data.get('national_id', '')
                         company = row_data.get('company', '')
                         
                         # Handle potential missing or non-numeric values
@@ -223,9 +209,9 @@ def init_db():
                         
                         # Insert data into the database
                         conn.execute('''
-                        INSERT INTO students (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                        ''', (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor))
+                        INSERT INTO students (name, company, speaking_points, total_points, proficiency_level, instructor)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        ''', (name, company, speaking_points, total_points, proficiency_level, instructor))
             except Exception as e:
                 print(f"Error importing CSV with latin1 encoding: {e}")
     
@@ -249,8 +235,6 @@ def add_student():
         return "Unauthorized: Incorrect password", 403
 
     name = request.form['name']
-    email = request.form['email']
-    national_id = request.form['national_id']
     company = request.form['company']
     speaking_points = int(request.form['speaking_points'])
     total_points = int(request.form['total_points'])
@@ -265,9 +249,9 @@ def add_student():
     
     conn = get_db_connection()
     conn.execute('''
-    INSERT INTO students (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (name, email, national_id, company, speaking_points, total_points, proficiency_level, instructor))
+    INSERT INTO students (name, company, speaking_points, total_points, proficiency_level, instructor)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ''', (name, company, speaking_points, total_points, proficiency_level, instructor))
     conn.commit()
     conn.close()
     
@@ -285,8 +269,6 @@ def get_student(id):
     return jsonify({
         'id': student['id'],
         'name': student['name'],
-        'email': student['email'],
-        'national_id': student['national_id'],
         'company': student['company'],
         'speaking_points': student['speaking_points'],
         'total_points': student['total_points'],
@@ -297,8 +279,6 @@ def get_student(id):
 @app.route('/update_student/<int:id>', methods=['POST'])
 def update_student(id):
     name = request.form['name']
-    email = request.form['email']
-    national_id = request.form['national_id']
     company = request.form['company']
     new_speaking_points = int(request.form['speaking_points'])
     new_total_points = int(request.form['total_points'])
@@ -329,10 +309,10 @@ def update_student(id):
 
     conn.execute('''
     UPDATE students
-    SET name = ?, email = ?, national_id = ?, company = ?, speaking_points = ?, 
+    SET name = ?, company = ?, speaking_points = ?, 
         total_points = ?, proficiency_level = ?, instructor = ?
     WHERE id = ?
-    ''', (name, email, national_id, company, new_speaking_points, total_points,
+    ''', (name, company, new_speaking_points, total_points,
           proficiency_level, instructor, id))
     conn.commit()
     conn.close()
