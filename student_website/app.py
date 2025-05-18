@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 app = Flask(__name__)
 app.config['DATABASE'] = 'students.db'
 
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")  # Set your admin password here or via env
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or "menoo20"  # fallback to your known password
 
 def get_db_connection():
     conn = sqlite3.connect(app.config['DATABASE'])
@@ -242,7 +242,7 @@ def index():
 @app.route('/add_student', methods=['POST'])
 def add_student():
     password = request.form.get('password', '')
-    if password != ADMIN_PASSWORD:
+    if not password or password != ADMIN_PASSWORD:
         # Support AJAX: return JSON if requested, else plain error
         if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'error': 'Unauthorized: Incorrect password'}), 403
