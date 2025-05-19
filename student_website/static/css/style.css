@@ -94,6 +94,76 @@ body {
     border: 1px solid #ced4da;
 }
 
+/* DataTables search filter styling */
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: right;
+    margin: 10px 0;
+}
+
+div.dataTables_wrapper div.dataTables_filter label {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+    margin-left: 8px;
+    width: auto;
+    min-width: 200px;
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+}
+
+/* DataTables search filter positioning fixes */
+div.dataTables_wrapper div.dataTables_filter,
+div.dataTables_wrapper div.dataTables_filter label,
+#studentTable_wrapper .dataTables_filter,
+#studentTable_wrapper .dataTables_filter label {
+    padding: 0;
+    margin: 0;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+    margin: 0 0 0 8px;
+    display: inline-block;
+}
+
+.dataTables_wrapper .row:first-child {
+    margin: 0;
+    padding: 1rem 0;
+}
+
+/* Reset padding for DataTables filter container */
+#studentTable_wrapper .row .col-sm-12.col-md-6,
+.dataTables_wrapper .row .col-sm-12.col-md-6 {
+    padding: 0;
+}
+
+#studentTable_filter,
+.dataTables_filter {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#studentTable_wrapper .row {
+    margin: 0;
+    padding: 1rem 0;
+}
+
+@media (max-width: 767px) {
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: left;
+        margin-top: 15px;
+    }
+    
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}
+
 /* Edit button styling */
 .btn-icon {
     padding: 0.25rem 0.5rem;
@@ -183,6 +253,7 @@ canvas {
     .header-logo {
         height: 50px;
     }
+
 }
 
 @media (max-width: 1024px) {

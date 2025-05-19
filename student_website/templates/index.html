@@ -8,6 +8,70 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+    @media (max-width: 576px) {
+        /* DataTables search and length controls spacing on mobile */
+        .dataTables_wrapper .row {
+            flex-direction: column !important;
+            gap: 0.5rem;
+            display: flex !important;
+        }
+        .dataTables_wrapper .row > div {
+            width: 100% !important;
+            margin-bottom: 0.5rem;
+        }
+        .dataTables_length,
+        .dataTables_filter {
+            width: 90% !important;
+            margin-bottom: 0.5rem !important;
+            display: block !important;
+            text-align: left !important;
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+            background: none !important;
+            box-shadow: none !important;
+        }
+        .dataTables_length label,
+        .dataTables_filter label {
+            width: 100%;
+            display: flex !important;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start !important;
+            text-align: left !important;
+            justify-content: flex-start !important;
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+            background: none !important;
+            box-shadow: none !important;
+        }
+        .dataTables_length select,
+        .dataTables_filter input[type="search"] {
+            width: 100% !important;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+            min-width: 0;
+            box-sizing: border-box;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
+        /* Remove extra padding from the search box container */
+        .dataTables_filter {
+            border-radius: 0.5rem;
+            padding: 0 !important; /* Remove all padding */
+        }
+        /* Force search to appear after show entries */
+        .dataTables_wrapper .row .dataTables_length {
+            order: 1;
+        }
+        .dataTables_wrapper .row .dataTables_filter {
+            order: 2;
+        }
+    }
+    </style>
 </head>
 <body>
     <!-- Watermark for author/owner -->
@@ -17,17 +81,13 @@
         right: 20px;
         z-index: 9999;
         opacity: 0.18;
-        font-size: clamp(1rem, 4vw, 2rem);
+        font-size: 2rem;
         font-weight: bold;
         color: #212529;
         pointer-events: none;
         user-select: none;
         text-shadow: 1px 1px 8px #fff, 0 0 2px #000;
         font-family: 'Segoe UI', Arial, sans-serif;
-        max-width: 90vw;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     ">
         &copy; Mr. Mohammed Ameen
     </div>
@@ -69,10 +129,10 @@
             <!-- Student Table -->
             <div class="col-md-12 mb-4">
                 <div class="card">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-light d-flex flex-wrap gap-2 justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Student List</h3>
-                        <div>
-                            <button id="deleteSelectedBtn" class="btn btn-danger btn-sm me-2" disabled>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button id="deleteSelectedBtn" class="btn btn-danger btn-sm" disabled>
                                 <i class="bi bi-trash"></i> Delete Selected
                             </button>
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
@@ -588,4 +648,3 @@
     </script>
 </body>
 </html>
-``` 
