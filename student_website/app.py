@@ -7,8 +7,6 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 app = Flask(__name__)
 app.config['DATABASE'] = 'students.db'
 
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or "menoo20"  # fallback to your known password
-
 def get_db_connection():
     conn = sqlite3.connect(app.config['DATABASE'])
     conn.row_factory = sqlite3.Row
@@ -223,39 +221,7 @@ def index():
     conn = get_db_connection()
     students = conn.execute('SELECT * FROM students').fetchall()
     conn.close()
-    return render_template('index.html', students=students)
-
-@app.route('/add_student', methods=['POST'])
-def add_student():
-    password = request.form.get('password', '')
-    if not password or password != ADMIN_PASSWORD:
-        # Support AJAX: return JSON if requested, else plain error
-        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'error': 'Unauthorized: Incorrect password'}), 403
-        return "Unauthorized: Incorrect password", 403
-
-    name = request.form['name']
-    company = request.form['company']
-    speaking_points = int(request.form['speaking_points'])
-    total_points = int(request.form['total_points'])
-    
-    # Determine proficiency level and instructor
-    if total_points < 30:
-        proficiency_level = 'Beginner'
-        instructor = 'Mr. Tawfeek'
-    else:
-        proficiency_level = 'Intermediate'
-        instructor = 'Mr. Mohammed Ameen'
-    
-    conn = get_db_connection()
-    conn.execute('''
-    INSERT INTO students (name, company, speaking_points, total_points, proficiency_level, instructor)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ''', (name, company, speaking_points, total_points, proficiency_level, instructor))
-    conn.commit()
-    conn.close()
-    
-    return redirect(url_for('index'))
+    return render_template('index.html', students=students, ADMIN_PASSWORD="")
 
 @app.route('/get_student/<int:id>', methods=['GET'])
 def get_student(id):
@@ -372,6 +338,39 @@ def api_student_stats():
             "labels": ["Mr. Tawfeek", "Mr. Mohammed Ameen"],
             "counts": [tawfeek, mohammed]
         }
+    })
+
+@app.route('/api/student_points_distribution')
+def api_student_points_distribution():
+    conn = get_db_connection()
+    students = conn.execute('SELECT total_points FROM students').fetchall()
+    conn.close()
+    # Categorize points by 10s
+    bins = {
+        "1-10": 0,
+        "11-20": 0,
+        "21-30": 0,
+        "31-40": 0,
+        "41-50": 0,
+        "51-60": 0
+    }
+    for s in students:
+        points = s['total_points']
+        if 1 <= points <= 10:
+            bins["1-10"] += 1
+        elif 11 <= points <= 20:
+            bins["11-20"] += 1
+        elif 21 <= points <= 30:
+            bins["21-30"] += 1
+        elif 31 <= points <= 40:
+            bins["31-40"] += 1
+        elif 41 <= points <= 50:
+            bins["41-50"] += 1
+        elif 51 <= points <= 60:
+            bins["51-60"] += 1
+    return jsonify({
+        "labels": list(bins.keys()),
+        "counts": list(bins.values())
     })
 
 if __name__ == '__main__':

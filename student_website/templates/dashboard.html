@@ -1,0 +1,13 @@
+<!-- Add this before the footer -->
+<div class="points-chart-section">
+    <div class="container">
+        <h3 class="chart-title">Student Points Distribution</h3>
+        <div class="points-chart-container">
+            <canvas id="pointsDistributionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Add these scripts before closing body tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/points_chart.js') }}"></script>

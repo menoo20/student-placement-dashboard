@@ -97,24 +97,6 @@ function refreshTableAndStats() {
     refreshStudentStatsCharts();
 }
 
-// Helper: check admin password only once per session
-function ensureAdminPassword(callback) {
-    if (sessionStorage.getItem('isAdmin') === 'true') {
-        callback();
-        return;
-    }
-    const input = prompt("Admin only! Please enter the admin password:");
-    if (input === "menoo20") { // Or use a variable if you want
-        sessionStorage.setItem('isAdmin', 'true');
-        // Set the password field for the form if needed
-        const pwInput = document.querySelector('#addStudentForm input[name="password"]');
-        if (pwInput) pwInput.value = input;
-        callback();
-    } else if (input !== null) {
-        alert("Incorrect password. Action cancelled.");
-    }
-}
-
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initial data load
@@ -129,94 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('change', '.student-checkbox', function() {
         $('#deleteSelectedBtn').prop('disabled', $('.student-checkbox:checked').length === 0);
     });
-
-    // Intercept the "Add New Student" button to prompt for password before showing modal
-    const addBtn = document.querySelector('[data-bs-target="#addStudentModal"]');
-    if (addBtn) {
-        addBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            ensureAdminPassword(function() {
-                // Set password in hidden field for form submission
-                const pwInput = document.querySelector('#addStudentForm input[name="password"]');
-                if (pwInput) pwInput.value = "menoo20";
-                // Show the modal
-                var modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
-                modal.show();
-            });
-        });
-    }
-
-    // Add Student Form Submit (protect with password prompt)
-    const addStudentForm = document.getElementById('addStudentForm');
-    if (addStudentForm) {
-        addStudentForm.addEventListener('submit', function(e) {
-            if (sessionStorage.getItem('isAdmin') === 'true') {
-                // Set password in hidden field for form submission
-                const pwInput = document.querySelector('#addStudentForm input[name="password"]');
-                if (pwInput) pwInput.value = "menoo20";
-                // Allow submit
-            } else {
-                e.preventDefault();
-                ensureAdminPassword(function() {
-                    addStudentForm.submit();
-                });
-            }
-        });
-    }
 });
 
 // Handle form submission via AJAX
 document.addEventListener('DOMContentLoaded', function() {
-    const addStudentForm = document.getElementById('addStudentForm');
-    if (addStudentForm) {
-        addStudentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(addStudentForm);
-            
-            fetch('/add_student', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Close the modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
-                    modal.hide();
-                    
-                    // Reset the form
-                    addStudentForm.reset();
-                    
-                    // Show success message
-                    const alertContainer = document.getElementById('alertContainer');
-                    alertContainer.innerHTML = `
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            Student added successfully!
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `;
-                    
-                    // Refresh data and charts
-                    refreshTableAndStats();
-                } else {
-                    throw new Error('Failed to add student');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                
-                // Show error message
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Failed to add student. Please try again.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-            });
-        });
-    }
-    
     // Preview proficiency level and instructor
     const totalPointsInput = document.getElementById('total_points');
     if (totalPointsInput) {
